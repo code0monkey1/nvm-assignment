@@ -1,32 +1,34 @@
 {
-    "name": "nvm-assignment",
-    "version": "1.0.0",
-    "main": "index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "dev": "node src/server.ts",
-        "format:fix": "prettier . --write",
-        "format:check": "prettier . --check",
-        "lint:fix": "eslint . --fix",
-        "lint:check": "eslint ."
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/code0monkey1/nvm-assignment.git"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/code0monkey1/nvm-assignment/issues"
-    },
-    "homepage": "https://github.com/code0monkey1/nvm-assignment#readme",
-    "description": "",
-    "devDependencies": {
-        "@eslint/js": "^9.24.0",
-        "eslint": "^9.24.0",
-        "prettier": "3.5.3",
-        "typescript": "^5.8.3",
-        "typescript-eslint": "^8.29.1"
-    }
+  "name": "nvm-assignment",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node src/server.ts",
+    "format:fix": "prettier . --write",
+    "format:check": "prettier . --check",
+    "lint:fix": "eslint . --fix",
+    "lint:check": "eslint .",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/code0monkey1/nvm-assignment.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/code0monkey1/nvm-assignment/issues"
+  },
+  "homepage": "https://github.com/code0monkey1/nvm-assignment#readme",
+  "description": "",
+  "devDependencies": {
+    "@eslint/js": "^9.24.0",
+    "eslint": "^9.24.0",
+    "husky": "^9.1.7",
+    "prettier": "3.5.3",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.29.1"
+  }
 }
