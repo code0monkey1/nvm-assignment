@@ -1,24 +1,27 @@
 {
-  "name": "nvm-assignment",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node src/server.ts"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/code0monkey1/nvm-assignment.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/code0monkey1/nvm-assignment/issues"
-  },
-  "homepage": "https://github.com/code0monkey1/nvm-assignment#readme",
-  "description": "",
-  "devDependencies": {
-    "typescript": "^5.8.3"
-  }
+    "name": "nvm-assignment",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dev": "node src/server.ts",
+        "format:fix": "prettier . --write",
+        "format:check": "prettier . --check"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/code0monkey1/nvm-assignment.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/code0monkey1/nvm-assignment/issues"
+    },
+    "homepage": "https://github.com/code0monkey1/nvm-assignment#readme",
+    "description": "",
+    "devDependencies": {
+        "prettier": "3.5.3",
+        "typescript": "^5.8.3"
+    }
 }
