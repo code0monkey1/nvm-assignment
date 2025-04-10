@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-     "dev": "node src/server.js"
+    "dev": "node src/server.ts"
   },
   "repository": {
     "type": "git",
@@ -17,5 +17,8 @@
     "url": "https://github.com/code0monkey1/nvm-assignment/issues"
   },
   "homepage": "https://github.com/code0monkey1/nvm-assignment#readme",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
 }
