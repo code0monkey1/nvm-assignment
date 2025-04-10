@@ -1,49 +1,51 @@
 {
-  "name": "nvm-assignment",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/server.ts",
-    "format:fix": "prettier . --write",
-    "format:check": "prettier . --check",
-    "lint:fix": "eslint . --fix",
-    "lint:check": "eslint .",
-    "prepare": "husky"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/code0monkey1/nvm-assignment.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/code0monkey1/nvm-assignment/issues"
-  },
-  "homepage": "https://github.com/code0monkey1/nvm-assignment#readme",
-  "description": "",
-  "devDependencies": {
-    "@eslint/js": "^9.24.0",
-    "@types/express": "^5.0.1",
-    "@types/node": "^22.14.0",
-    "eslint": "^9.24.0",
-    "husky": "^9.1.7",
-    "lint-staged": "^15.5.0",
-    "nodemon": "^3.1.9",
-    "prettier": "3.5.3",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.8.3",
-    "typescript-eslint": "^8.29.1"
-  },
-  "lint-staged": {
-    "*.ts": [
-      "npm run format:fix",
-      "npm run lint:fix"
-    ]
-  },
-  "dependencies": {
-    "dotenv": "^16.4.7",
-    "express": "^5.1.0"
-  }
+    "name": "nvm-assignment",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dev": "nodemon src/server.ts",
+        "format:fix": "prettier . --write",
+        "format:check": "prettier . --check",
+        "lint:fix": "eslint . --fix",
+        "lint:check": "eslint .",
+        "prepare": "husky"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/code0monkey1/nvm-assignment.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/code0monkey1/nvm-assignment/issues"
+    },
+    "homepage": "https://github.com/code0monkey1/nvm-assignment#readme",
+    "description": "",
+    "devDependencies": {
+        "@eslint/js": "^9.24.0",
+        "@types/express": "^5.0.1",
+        "@types/node": "^22.14.0",
+        "@types/winston": "^2.4.4",
+        "eslint": "^9.24.0",
+        "husky": "^9.1.7",
+        "lint-staged": "^15.5.0",
+        "nodemon": "^3.1.9",
+        "prettier": "3.5.3",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.8.3",
+        "typescript-eslint": "^8.29.1"
+    },
+    "lint-staged": {
+        "*.ts": [
+            "npm run format:fix",
+            "npm run lint:fix"
+        ]
+    },
+    "dependencies": {
+        "dotenv": "^16.4.7",
+        "express": "^5.1.0",
+        "winston": "^3.17.0"
+    }
 }
