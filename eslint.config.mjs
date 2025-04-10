@@ -15,7 +15,7 @@ export default tseslint.config(
       },
     },
     rules:{
-         "no-console":"error",
+         "no-console":"off",
          '@typescript-eslint/no-unsafe-call': 'off',
          '@typescript-eslint/no-unsafe-member-access': 'off'
     }
