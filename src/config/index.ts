@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { config } from "dotenv";
+import { config } from 'dotenv';
 
-config()
+config();
 
-const {PORT,NODE_ENV} = process.env 
+const { PORT, NODE_ENV } = process.env;
 
-export const Config= {
+export const Config = {
     PORT,
-    NODE_ENV
-}
+    NODE_ENV,
+};
