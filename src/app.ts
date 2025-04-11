@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express';
 import { HttpError } from 'http-errors';
 import logger from './config/logger';
+import authRouter from './routes/authRouter';
 
 const app = express();
 
@@ -11,6 +12,8 @@ app.get('/', (_req, res, next: NextFunction) => {
         next(e);
     }
 });
+
+app.use('/auth', authRouter);
 
 // global error middleware defined at the end of all routes
 
