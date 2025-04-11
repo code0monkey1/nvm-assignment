@@ -1,15 +1,11 @@
 import express, { NextFunction, Request, Response } from 'express';
-import createHttpError, { HttpError } from 'http-errors';
+import { HttpError } from 'http-errors';
 import logger from './config/logger';
 
 const app = express();
 
 app.get('/', (_req, res, next: NextFunction) => {
     try {
-        const err = createHttpError(401, 'testing error');
-
-        throw err;
-
         res.send('Hello');
     } catch (e) {
         next(e);
