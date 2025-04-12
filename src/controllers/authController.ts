@@ -1,19 +1,9 @@
-import { Request, Response, NextFunction } from 'express';
-import { User } from '../entity/User';
-import { AppDataSource } from '../config/data-source';
+import { Response, NextFunction } from 'express';
+import { RegisterUserRequest } from '../types';
+import UserService from '../services/UserService';
 
-interface UserData {
-    firstName: string;
-    lastName: string;
-    password: string;
-    email: string;
-}
-
-interface RegisterUserRequest extends Request {
-    body: UserData;
-}
-export class AuthController {
-    constructor() {}
+class AuthController {
+    constructor(private readonly userSerive: UserService) {}
 
     register = async (
         req: RegisterUserRequest,
@@ -22,19 +12,17 @@ export class AuthController {
     ) => {
         try {
             const { firstName, lastName, password, email } = req.body;
-
-            const userRepository = AppDataSource.getRepository(User);
-
-            const savedUser = await userRepository.save({
+            const savedUser = await this.userSerive.create({
                 firstName,
                 lastName,
                 password,
                 email,
             });
-
             res.status(201).json(savedUser);
         } catch (e) {
             next(e);
         }
     };
 }
+
+export default AuthController;
