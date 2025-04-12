@@ -36,6 +36,8 @@ describe('POST /auth/register', () => {
                 /application\/json/,
             );
         });
+
+        it.todo('should persist a registered users data in the database');
     });
 
     describe('when some data is missing', () => {});

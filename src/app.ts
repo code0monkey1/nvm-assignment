@@ -1,8 +1,8 @@
+import 'reflect-metadata';
 import express, { NextFunction, Request, Response } from 'express';
 import { HttpError } from 'http-errors';
 import logger from './config/logger';
 import authRouter from './routes/authRouter';
-
 const app = express();
 
 app.get('/', (_req, res, next: NextFunction) => {
