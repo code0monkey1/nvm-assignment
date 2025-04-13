@@ -123,6 +123,30 @@ describe('POST /auth/register', () => {
             expect(savedUsers[0]).toHaveProperty('role');
             expect(savedUsers[0].role).toBe(ROLES.CUSTOMER);
         });
+        it('should not have the saved password as the original password ', async () => {
+            //arrange
+            const userData = {
+                firstName: 'first_name',
+                lastName: 'last_name',
+                email: 'unique_email@gmail.com',
+                password: 'secret',
+            };
+
+            // act
+            await api.post(BASE_URL).send(userData);
+
+            // assert
+            const userRepository = connection.getRepository(User);
+            const savedUsers = await userRepository.find();
+
+            expect(savedUsers).toHaveLength(1);
+
+            expect(savedUsers[0].password).not.toBe(userData.password);
+            expect(savedUsers[0].password).toHaveLength(60);
+
+            // regex match to check if it's a valid hashed password
+            expect(savedUsers[0].password).toMatch(/^\$2b\$\d+\$/);
+        });
     });
 
     describe('when some data is missing', () => {});

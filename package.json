@@ -26,13 +26,12 @@
     "homepage": "https://github.com/code0monkey1/nvm-assignment#readme",
     "description": "",
     "devDependencies": {
-        "@types/node": "^22.14.1",
-        "ts-node": "^10.9.2",
-        "typescript": "^5.8.3",
         "@eslint/js": "^9.24.0",
+        "@types/bcrypt": "^5.0.2",
         "@types/express": "^5.0.1",
         "@types/http-errors": "^2.0.4",
         "@types/jest": "^29.5.14",
+        "@types/node": "^22.14.1",
         "@types/supertest": "^6.0.3",
         "@types/winston": "^2.4.4",
         "eslint": "^9.24.0",
@@ -43,6 +42,8 @@
         "prettier": "3.5.3",
         "supertest": "^7.1.0",
         "ts-jest": "^29.3.1",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.8.3",
         "typescript-eslint": "^8.29.1"
     },
     "lint-staged": {
@@ -52,6 +53,7 @@
         ]
     },
     "dependencies": {
+        "bcrypt": "^5.1.1",
         "dotenv": "^16.4.7",
         "express": "^5.1.0",
         "http-errors": "^2.0.0",
