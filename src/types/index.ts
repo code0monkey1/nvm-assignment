@@ -3,10 +3,10 @@ import { Request } from 'express';
 export interface UserData {
     firstName: string;
     lastName: string;
-    password: string;
     email: string;
+    password: string;
 }
 
-export interface RegisterUserRequest extends Request {
+export interface RegisterRequest extends Request {
     body: UserData;
 }

@@ -1,20 +1,29 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Response, NextFunction } from 'express';
-import { RegisterUserRequest } from '../types';
+import { RegisterRequest } from '../types';
 import UserService from '../services/UserService';
 import { Logger } from 'winston';
+import { validationResult } from 'express-validator';
 
-class AuthController {
+export class AuthController {
     constructor(
         private readonly userSerive: UserService,
         private readonly logger: Logger,
     ) {}
 
     register = async (
-        req: RegisterUserRequest,
+        req: RegisterRequest,
         res: Response,
         next: NextFunction,
-    ) => {
+    ): Promise<any> => {
         try {
+            const result = validationResult(req);
+
+            if (!result.isEmpty()) {
+                res.status(400).json({ errors: result.array() });
+                return; // Ensure the function exits after sending the response
+            }
+
             const { firstName, lastName, password, email } = req.body;
 
             this.logger.debug('User Info', {
@@ -39,5 +48,3 @@ class AuthController {
         }
     };
 }
-
-export default AuthController;

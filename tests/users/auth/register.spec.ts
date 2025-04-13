@@ -33,7 +33,7 @@ describe('POST /auth/register', () => {
                 firstName: 'first_name',
                 lastName: 'last_name',
                 email: 'unique_email@gmail.com',
-                password: 'secret',
+                password: 'secretfade',
             };
 
             // act
@@ -59,7 +59,7 @@ describe('POST /auth/register', () => {
                 firstName: 'first_name',
                 lastName: 'last_name',
                 email: 'unique_email@gmail.com',
-                password: 'secret',
+                password: 'secretfad',
             };
 
             // act
@@ -79,7 +79,7 @@ describe('POST /auth/register', () => {
                 firstName: 'first_name',
                 lastName: 'last_name',
                 email: 'unique_email@gmail.com',
-                password: 'secret',
+                password: 'secretfad',
             };
 
             // act
@@ -93,7 +93,7 @@ describe('POST /auth/register', () => {
                 firstName: 'first_name',
                 lastName: 'last_name',
                 email: 'unique_email@gmail.com',
-                password: 'secret',
+                password: 'secretfad',
             };
 
             // act
@@ -109,7 +109,7 @@ describe('POST /auth/register', () => {
                 firstName: 'first_name',
                 lastName: 'last_name',
                 email: 'unique_email@gmail.com',
-                password: 'secret',
+                password: 'secretfad',
             };
 
             // act
@@ -130,7 +130,7 @@ describe('POST /auth/register', () => {
                 firstName: 'first_name',
                 lastName: 'last_name',
                 email: 'unique_email@gmail.com',
-                password: 'secret',
+                password: 'secretfad',
             };
 
             // act
@@ -165,6 +165,17 @@ describe('POST /auth/register', () => {
             const userRepository = connection.getRepository(User);
             const savedUsers = await userRepository.find();
             expect(savedUsers).toHaveLength(1);
+        });
+        it('should return status 400 if email is empty', async () => {
+            // first register a user
+            const userData = {
+                firstName: 'first_name',
+                lastName: 'last_name',
+                password: 'secret',
+                email: '',
+            };
+
+            await api.post(BASE_URL).send(userData).expect(400);
         });
     });
 });
