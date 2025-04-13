@@ -3,6 +3,7 @@ import request from 'supertest';
 import app from '../../../src/app';
 import { DataSource } from 'typeorm';
 import { User } from '../../../src/entity/User';
+import { ROLES } from '../../../src/constants';
 
 describe('POST /auth/register', () => {
     const api = request(app);
@@ -101,7 +102,27 @@ describe('POST /auth/register', () => {
                 /application\/json/,
             );
         });
-        it.todo('should have the `role` as `customer` after registration');
+        it('should have the `role` as `customer` after registration', async () => {
+            //arrange
+            const userData = {
+                firstName: 'first_name',
+                lastName: 'last_name',
+                email: 'unique_email@gmail.com',
+                password: 'secret',
+            };
+
+            // act
+            await api.post(BASE_URL).send(userData);
+
+            // assert
+            const userRepository = connection.getRepository(User);
+            const savedUsers = await userRepository.find();
+
+            expect(savedUsers).toHaveLength(1);
+
+            expect(savedUsers[0]).toHaveProperty('role');
+            expect(savedUsers[0].role).toBe(ROLES.CUSTOMER);
+        });
     });
 
     describe('when some data is missing', () => {});

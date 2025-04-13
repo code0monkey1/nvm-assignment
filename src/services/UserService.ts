@@ -2,6 +2,7 @@ import { Repository } from 'typeorm';
 import { UserData } from '../types';
 import { User } from '../entity/User';
 import createHttpError from 'http-errors';
+import { ROLES } from '../constants';
 
 class UserService {
     // we get the userRepositry type from TypeOrm ( we can injext AppDataSource.getRepository<User> into it)
@@ -14,6 +15,7 @@ class UserService {
                 lastName,
                 email,
                 password,
+                role: ROLES.CUSTOMER,
             });
 
             return savedUser;
