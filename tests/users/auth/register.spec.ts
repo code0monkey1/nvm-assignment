@@ -4,6 +4,7 @@ import app from '../../../src/app';
 import { DataSource } from 'typeorm';
 import { User } from '../../../src/entity/User';
 import { ROLES } from '../../../src/constants';
+import { createUser } from '../../helper';
 
 describe('POST /auth/register', () => {
     const api = request(app);
@@ -147,7 +148,23 @@ describe('POST /auth/register', () => {
             // regex match to check if it's a valid hashed password
             expect(savedUsers[0].password).toMatch(/^\$2b\$\d+\$/);
         });
-    });
 
-    describe('when some data is missing', () => {});
+        it('should return status 400 if email aready exists', async () => {
+            // first register a user
+            const userData = {
+                firstName: 'first_name',
+                lastName: 'last_name',
+                password: 'secret',
+                email: 'email@gmail.com',
+            };
+
+            await createUser(userData);
+            await api.post(BASE_URL).send(userData).expect(400);
+
+            // ensure no new user has been created
+            const userRepository = connection.getRepository(User);
+            const savedUsers = await userRepository.find();
+            expect(savedUsers).toHaveLength(1);
+        });
+    });
 });

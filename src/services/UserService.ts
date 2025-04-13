@@ -13,25 +13,30 @@ class UserService {
     ) {}
 
     create = async ({ firstName, lastName, email, password }: UserData) => {
-        try {
-            const hashedPassword =
-                await this.encryptionService.generateHash(password);
+        const hashedPassword =
+            await this.encryptionService.generateHash(password);
 
-            const savedUser = await this.userRepository.save({
-                firstName,
-                lastName,
-                email,
-                password: hashedPassword,
-                role: ROLES.CUSTOMER,
-            });
+        // check if user with emailId already exists
+        const userExists = await this.userRepository.findOne({
+            where: { email },
+        });
 
-            return savedUser;
-
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (err) {
-            // create a custom error handler, to identify error happending
-            throw createHttpError(500, 'Failed to store user data in DB ');
+        if (userExists) {
+            throw createHttpError(
+                400,
+                'Email Already Registered, Login Instead!',
+            );
         }
+
+        const savedUser = await this.userRepository.save({
+            firstName,
+            lastName,
+            email,
+            password: hashedPassword,
+            role: ROLES.CUSTOMER,
+        });
+
+        return savedUser;
     };
 }
 
