@@ -20,10 +20,12 @@ export default checkSchema({
     },
     lastName: {
         errorMessage: 'lastName is missing',
+        trim: true,
         notEmpty: true,
     },
     firstName: {
         errorMessage: 'firstName is missing',
+        trim: true,
         notEmpty: true,
     },
 });
