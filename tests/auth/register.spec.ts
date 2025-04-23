@@ -10,6 +10,7 @@ import {
     createUser,
     isJwt,
 } from '../helper';
+import { RefreshToken } from '../../src/entity/RefreshToken';
 
 describe('POST /auth/register', () => {
     const api = request(app);
@@ -213,6 +214,37 @@ describe('POST /auth/register', () => {
 
                 expect(isJwt(accessToken)).toBeTruthy();
             });
+        });
+
+        it('should store the refreshToken in the database', async () => {
+            // first register a user
+            const userData = {
+                firstName: 'first_name',
+                lastName: 'last_name',
+                password: '12345678',
+                email: 'email@gmail.com',
+            };
+
+            const savedUser = await api
+                .post(BASE_URL)
+                .send(userData)
+                .expect(201);
+
+            // query and see if the refreshToken of the user is there in the db
+
+            const refreshTokenRepo = connection.getRepository(RefreshToken);
+
+            const savedTokens = await refreshTokenRepo.find();
+            expect(savedTokens).toHaveLength(1);
+
+            const tokens = await refreshTokenRepo
+                .createQueryBuilder('refreshToken')
+                .where('refreshToken.userId = :userId', {
+                    userId: (savedUser.body as Record<string, string>).id,
+                })
+                .getMany();
+
+            expect(tokens).toHaveLength(1);
         });
     });
 

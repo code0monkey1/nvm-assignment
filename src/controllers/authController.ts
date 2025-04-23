@@ -6,6 +6,8 @@ import { Logger } from 'winston';
 import { validationResult } from 'express-validator';
 import { JwtPayload, sign, SignOptions } from 'jsonwebtoken';
 import { Config } from '../config';
+import { AppDataSource } from '../config/data-source';
+import { RefreshToken } from '../entity/RefreshToken';
 
 export class AuthController {
     constructor(
@@ -68,10 +70,22 @@ export class AuthController {
             });
 
             // create refreshToken
+
+            //save refreshToken to db
+            const refreshTokenRepo = AppDataSource.getRepository(RefreshToken);
+
+            const ONE_YEAR = 1000 * 60 * 60 * 24 * 365;
+
+            const savedRefreshToken = await refreshTokenRepo.save({
+                user: savedUser,
+                expiresAt: new Date(Date.now() + ONE_YEAR), // 1 year later from data of creation
+            });
+
             const refreshTokenSignUptions: SignOptions = {
                 algorithm: 'HS256',
                 expiresIn: '1y',
                 issuer: 'auth-service',
+                jwtid: String(savedRefreshToken.id),
             };
 
             const refreshToken = sign(
