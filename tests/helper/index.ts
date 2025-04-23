@@ -31,3 +31,11 @@ export async function assertHasErrorMessage(result, errMsg) {
     const storedUsers = await userRepo.find();
     expect(storedUsers).toHaveLength(0);
 }
+
+export function isJwt(str) {
+    // Basic JWT structure check (3 parts separated by dots)
+    const jwtRegex = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/;
+
+    // Verify string structure
+    return jwtRegex.test(str);
+}

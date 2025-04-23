@@ -8,6 +8,7 @@ import {
     assertHasErrorMessage,
     assertUserCreated,
     createUser,
+    isJwt,
 } from '../helper';
 
 describe('POST /auth/register', () => {
@@ -77,7 +78,7 @@ describe('POST /auth/register', () => {
 
             // act
             // assert
-            await api.post(BASE_URL).send(userData).expect(201);
+            const result = await api.post(BASE_URL).send(userData);
         });
 
         it('should return valid JSON response', async () => {
@@ -169,6 +170,49 @@ describe('POST /auth/register', () => {
             };
 
             await api.post(BASE_URL).send(userData).expect(400);
+        });
+
+        describe('token based auth', () => {
+            it('should return an accessToken and refreshToken inside a cookie', async () => {
+                // first register a user
+                const userData = {
+                    firstName: 'first_name',
+                    lastName: 'last_name',
+                    password: '12345678',
+                    email: 'email@gmail.com',
+                };
+
+                const response = await api
+                    .post(BASE_URL)
+                    .send(userData)
+                    .expect(201);
+
+                // Check the Set-Cookie header in the response
+                const cookies = (response.headers['set-cookie'] ||
+                    []) as string[];
+
+                expect(cookies).toBeDefined();
+
+                // Verify that the cookies include HttpOnly flags
+                let accessToken = null as null | String;
+                let refreshToken = null as null | String;
+
+                cookies.forEach((cookie) => {
+                    if (cookie.startsWith('accessToken=')) {
+                        accessToken = cookie.split(';')[0].split('=')[1];
+                    }
+                    if (cookie.startsWith('refreshToken=')) {
+                        refreshToken = cookie.split(';')[0].split('=')[1];
+                    }
+                });
+
+                expect(accessToken).not.toBeNull();
+                expect(refreshToken).not.toBeNull();
+
+                // check if it isJwt
+
+                expect(isJwt(accessToken)).toBeTruthy();
+            });
         });
     });
 

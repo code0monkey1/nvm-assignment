@@ -4,6 +4,8 @@ import { RegisterRequest } from '../types';
 import UserService from '../services/UserService';
 import { Logger } from 'winston';
 import { validationResult } from 'express-validator';
+import { JwtPayload, sign, SignOptions } from 'jsonwebtoken';
+import { Config } from '../config';
 
 export class AuthController {
     constructor(
@@ -38,6 +40,51 @@ export class AuthController {
                 lastName,
                 password,
                 email,
+            });
+
+            const payload: JwtPayload = {
+                sub: String(savedUser.id), // stores the userId of the user creating the token
+                role: savedUser.role,
+            };
+
+            // create accessToken
+            const accessTokenSignOptions: SignOptions = {
+                algorithm: 'RS256',
+                expiresIn: '1h', // 1 hour,
+                issuer: 'auth-service',
+            };
+
+            const accessToken = sign(
+                payload,
+                Config.PRIVATE_KEY!,
+                accessTokenSignOptions,
+            );
+
+            res.cookie('accessToken', accessToken, {
+                domain: 'localhost',
+                sameSite: 'strict',
+                maxAge: 1000 * 60 * 60, // 1 hour
+                httpOnly: true, // very important to prevent access to any client side code
+            });
+
+            // create refreshToken
+            const refreshTokenSignUptions: SignOptions = {
+                algorithm: 'HS256',
+                expiresIn: '1y',
+                issuer: 'auth-service',
+            };
+
+            const refreshToken = sign(
+                payload,
+                Config.REFRESH_TOKEN_SECRET_KEY!,
+                refreshTokenSignUptions,
+            );
+
+            res.cookie('refreshToken', refreshToken, {
+                domain: 'localhost',
+                sameSite: 'strict',
+                maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
+                httpOnly: true, // very important to prevent access to any client side code
             });
 
             this.logger.info(`User has been created with id:${savedUser.id}`);
