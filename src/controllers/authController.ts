@@ -4,14 +4,13 @@ import { RegisterRequest } from '../types';
 import UserService from '../services/UserService';
 import { Logger } from 'winston';
 import { validationResult } from 'express-validator';
-import { JwtPayload, sign, SignOptions } from 'jsonwebtoken';
-import { Config } from '../config';
-import { AppDataSource } from '../config/data-source';
-import { RefreshToken } from '../entity/RefreshToken';
+import { JwtPayload } from 'jsonwebtoken';
+import TokenService from '../services/TokenService';
 
 export class AuthController {
     constructor(
         private readonly userSerive: UserService,
+        private readonly tokenService: TokenService,
         private readonly logger: Logger,
     ) {}
 
@@ -48,19 +47,8 @@ export class AuthController {
                 sub: String(savedUser.id), // stores the userId of the user creating the token
                 role: savedUser.role,
             };
-
             // create accessToken
-            const accessTokenSignOptions: SignOptions = {
-                algorithm: 'RS256',
-                expiresIn: '1h', // 1 hour,
-                issuer: 'auth-service',
-            };
-
-            const accessToken = sign(
-                payload,
-                Config.PRIVATE_KEY!,
-                accessTokenSignOptions,
-            );
+            const accessToken = this.tokenService.generateAccessToken(payload);
 
             res.cookie('accessToken', accessToken, {
                 domain: 'localhost',
@@ -70,28 +58,12 @@ export class AuthController {
             });
 
             // create refreshToken
+            const persistedRefreshToken =
+                await this.tokenService.persistRefreshToken(savedUser);
 
-            //save refreshToken to db
-            const refreshTokenRepo = AppDataSource.getRepository(RefreshToken);
-
-            const ONE_YEAR = 1000 * 60 * 60 * 24 * 365;
-
-            const savedRefreshToken = await refreshTokenRepo.save({
-                user: savedUser,
-                expiresAt: new Date(Date.now() + ONE_YEAR), // 1 year later from data of creation
-            });
-
-            const refreshTokenSignUptions: SignOptions = {
-                algorithm: 'HS256',
-                expiresIn: '1y',
-                issuer: 'auth-service',
-                jwtid: String(savedRefreshToken.id),
-            };
-
-            const refreshToken = sign(
+            const refreshToken = this.tokenService.generateRefreshToken(
                 payload,
-                Config.REFRESH_TOKEN_SECRET_KEY!,
-                refreshTokenSignUptions,
+                String(persistedRefreshToken.id),
             );
 
             res.cookie('refreshToken', refreshToken, {
