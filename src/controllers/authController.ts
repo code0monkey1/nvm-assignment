@@ -1,16 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Response, NextFunction } from 'express';
-import { RegisterRequest } from '../types';
+import { LoginRequest, RegisterRequest } from '../types';
 import UserService from '../services/UserService';
 import { Logger } from 'winston';
 import { validationResult } from 'express-validator';
 import { JwtPayload } from 'jsonwebtoken';
 import TokenService from '../services/TokenService';
+import createHttpError from 'http-errors';
+
+import CredentialService from '../services/CredentialService';
 
 export class AuthController {
     constructor(
         private readonly userSerive: UserService,
         private readonly tokenService: TokenService,
+        private readonly credentialService: CredentialService,
         private readonly logger: Logger,
     ) {}
 
@@ -75,7 +79,77 @@ export class AuthController {
 
             this.logger.info(`User has been created with id:${savedUser.id}`);
 
-            res.status(201).json(savedUser);
+            res.status(201).json({ id: savedUser.id });
+        } catch (e) {
+            next(e);
+        }
+    };
+
+    login = async (req: LoginRequest, res: Response, next: NextFunction) => {
+        try {
+            // check if the given user info is valid
+            const result = validationResult(req);
+
+            if (!result.isEmpty()) {
+                res.status(400).json({ errors: result.array() });
+                return; // Ensure the function exits after sending the response
+            }
+
+            const { password, email } = req.body;
+
+            // check the validity of username and password
+
+            const user = await this.userSerive.findByEmail(email);
+
+            if (!user) {
+                throw createHttpError(400, 'Email or Password is Invalid');
+            }
+
+            const isCorrectPassword =
+                await this.credentialService.isCorrectPassword(
+                    password,
+                    user.password,
+                );
+
+            if (!isCorrectPassword) {
+                throw createHttpError(400, 'Email or Password is Invalid');
+            }
+
+            // return the auth token and refresh token
+
+            const payload: JwtPayload = {
+                sub: String(user.id), // stores the userId of the user creating the token
+                role: user.role,
+            };
+            // create accessToken
+            const accessToken = this.tokenService.generateAccessToken(payload);
+
+            res.cookie('accessToken', accessToken, {
+                domain: 'localhost',
+                sameSite: 'strict',
+                maxAge: 1000 * 60 * 60, // 1 hour
+                httpOnly: true, // very important to prevent access to any client side code
+            });
+
+            // create refreshToken
+            const persistedRefreshToken =
+                await this.tokenService.persistRefreshToken(user);
+
+            const refreshToken = this.tokenService.generateRefreshToken(
+                payload,
+                String(persistedRefreshToken.id),
+            );
+
+            res.cookie('refreshToken', refreshToken, {
+                domain: 'localhost',
+                sameSite: 'strict',
+                maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
+                httpOnly: true, // very important to prevent access to any client side code
+            });
+
+            this.logger.info(`User with id:${user.id} logged in`);
+
+            res.status(200).json({ id: user.id });
         } catch (e) {
             next(e);
         }

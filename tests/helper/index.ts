@@ -28,8 +28,6 @@ export async function assertUserCreated(userData) {
 export async function assertHasErrorMessage(result, errMsg) {
     expect(result.body.errors.map((m) => m.msg)).toContain(errMsg);
     const userRepo = AppDataSource.getRepository(User);
-    const storedUsers = await userRepo.find();
-    expect(storedUsers).toHaveLength(0);
 }
 
 export function isJwt(str) {

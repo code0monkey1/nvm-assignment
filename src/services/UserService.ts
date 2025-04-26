@@ -38,6 +38,10 @@ class UserService {
 
         return savedUser;
     };
+
+    findByEmail = async (email: string) => {
+        return await this.userRepository.findOneBy({ email });
+    };
 }
 
 export default UserService;
