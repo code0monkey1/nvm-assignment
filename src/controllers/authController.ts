@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Response, NextFunction } from 'express';
-import { LoginRequest, RegisterRequest } from '../types';
+import { Request, Response, NextFunction } from 'express';
+import { AuthRequest, LoginRequest, RegisterRequest } from '../types';
 import UserService from '../services/UserService';
 import { Logger } from 'winston';
 import { validationResult } from 'express-validator';
 import { JwtPayload } from 'jsonwebtoken';
 import TokenService from '../services/TokenService';
 import createHttpError from 'http-errors';
-
 import CredentialService from '../services/CredentialService';
 
 export class AuthController {
@@ -150,6 +149,20 @@ export class AuthController {
             this.logger.info(`User with id:${user.id} logged in`);
 
             res.status(200).json({ id: user.id });
+        } catch (e) {
+            next(e);
+        }
+    };
+
+    self = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const authRequest = req as AuthRequest;
+            // take the userId from the token, and get the user details
+            const userId = Number(authRequest.auth.sub);
+            // attach the user details to the response object
+            const user = await this.userSerive.findById(userId);
+
+            res.json(user);
         } catch (e) {
             next(e);
         }

@@ -9,11 +9,13 @@ export async function createUser(userData: UserData) {
     const userRepo = AppDataSource.getRepository(User);
     const hashedPassword = await bcrypt.hash(userData.password, 10);
 
-    await userRepo.save({
+    const user = await userRepo.save({
         ...userData,
         role: ROLES.CUSTOMER,
         password: hashedPassword,
     });
+
+    return user;
 }
 export async function assertUserCreated(userData) {
     const userRepository = AppDataSource.getRepository(User);

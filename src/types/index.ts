@@ -14,3 +14,9 @@ export interface RegisterRequest extends Request {
 export interface LoginRequest extends Request {
     body: Pick<UserData, 'email' | 'password'>;
 }
+export interface AuthRequest extends Request {
+    auth: {
+        sub: string;
+        role: string;
+    };
+}

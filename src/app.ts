@@ -3,6 +3,7 @@ import express, { NextFunction, Request, Response, json } from 'express';
 import { HttpError } from 'http-errors';
 import logger from './config/logger';
 import authRouter from './routes/authRouter';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.get('/', (_req, res, next: NextFunction) => {
     }
 });
 app.use(json());
+app.use(cookieParser());
 
 app.use('/auth', authRouter);
 

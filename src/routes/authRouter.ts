@@ -11,6 +11,8 @@ import { RefreshToken } from '../entity/RefreshToken';
 import loginValidator from '../validators/login-validator';
 import CredentialService from '../services/CredentialService';
 
+import authenticate from '../middleware/authenticate';
+
 const userRepository = AppDataSource.getRepository(User);
 const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
 const encryptionSerivce = new EncryptionService();
@@ -29,5 +31,7 @@ const route = Router();
 route.post('/register', registerValidator, authController.register);
 
 route.post('/login', loginValidator, authController.login);
+
+route.get('/self', authenticate, authController.self);
 
 export default route;

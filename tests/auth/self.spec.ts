@@ -1,0 +1,86 @@
+import request from 'supertest';
+import app from '../../src/app';
+import { DataSource } from 'typeorm';
+import { AppDataSource } from '../../src/config/data-source';
+import { createUser } from '../helper';
+import { createJWKSMock } from 'mock-jwks';
+import { ROLES } from '../../src/constants';
+describe('GET auth/self', () => {
+    let jwksMock: ReturnType<typeof createJWKSMock>;
+    const api = request(app);
+    const BASE_URL = '/auth/self';
+
+    let connection: DataSource;
+
+    beforeAll(async () => {
+        jwksMock = createJWKSMock('http://localhost:3000');
+        connection = await AppDataSource.initialize();
+    });
+
+    beforeEach(async () => {
+        // start mock jwks server
+        jwksMock.start();
+        // clear test db data , and then syncrhonize
+        await connection.dropDatabase();
+        await connection.synchronize();
+    });
+
+    afterEach(() => {
+        jwksMock.stop();
+    });
+
+    afterAll(async () => {
+        await connection.destroy();
+    });
+    describe('When all fields are present', () => {
+        it('should return status 200', async () => {
+            //register a user
+            const userData = {
+                firstName: 'first_name',
+                lastName: 'last_name',
+                email: 'email@gmail.com',
+                password: '12345678',
+                role: ROLES.CUSTOMER,
+            };
+
+            const user = await createUser(userData);
+
+            const accessToken = jwksMock.token({
+                sub: String(user.id),
+                role: ROLES.CUSTOMER,
+            });
+
+            await api
+                .get(BASE_URL)
+                .set('Cookie', [`accessToken=${accessToken};`])
+                .expect(200);
+        });
+
+        it('should return the user data', async () => {
+            //register a user
+            const userData = {
+                firstName: 'first_name',
+                lastName: 'last_name',
+                email: 'email@gmail.com',
+                password: '12345678',
+            };
+
+            const user = await createUser(userData);
+
+            // generate token (use Jwks mock to for jwks token verification)
+            const accessToken = jwksMock.token({
+                sub: String(user.id),
+                role: user.role,
+            });
+
+            // add token to cookie
+            const response = await api
+                .get(BASE_URL)
+                .expect(200)
+                .set('Cookie', [`accessToken=${accessToken};`]);
+
+            // check if userData matches with self body
+            expect(response.body.id).toBe(user.id);
+        });
+    });
+});

@@ -11,7 +11,19 @@ class UserService {
         private userRepository: Repository<User>,
         private encryptionService: EncryptionService,
     ) {}
+    findById = async (id: number) => {
+        const user = await this.userRepository.findOne({
+            where: {
+                id,
+            },
+        });
 
+        if (!user) {
+            throw createHttpError(400, 'User Does Not Exist');
+        }
+
+        return user;
+    };
     create = async ({ firstName, lastName, email, password }: UserData) => {
         const hashedPassword =
             await this.encryptionService.generateHash(password);
