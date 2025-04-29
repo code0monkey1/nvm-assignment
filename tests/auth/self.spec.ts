@@ -78,9 +78,36 @@ describe('GET auth/self', () => {
                 .get(BASE_URL)
                 .expect(200)
                 .set('Cookie', [`accessToken=${accessToken};`]);
-
             // check if userData matches with self body
             expect(response.body.id).toBe(user.id);
+            expect(response.body.role).toBe(user.role);
+        });
+
+        it('should not return the password field', async () => {
+            //register a user
+            const userData = {
+                firstName: 'first_name',
+                lastName: 'last_name',
+                email: 'email@gmail.com',
+                password: '12345678',
+            };
+
+            const user = await createUser(userData);
+
+            // generate token (use Jwks mock to for jwks token verification)
+            const accessToken = jwksMock.token({
+                sub: String(user.id),
+                role: user.role,
+            });
+
+            // add token to cookie
+            const response = await api
+                .get(BASE_URL)
+                .expect(200)
+                .set('Cookie', [`accessToken=${accessToken};`]);
+
+            // check if userData matches with self body
+            expect(response.body.password).toBeUndefined();
         });
     });
 });

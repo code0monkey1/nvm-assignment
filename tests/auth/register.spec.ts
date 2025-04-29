@@ -133,7 +133,9 @@ describe('POST /auth/register', () => {
 
             // assert
             const userRepository = connection.getRepository(User);
-            const savedUsers = await userRepository.find();
+            const savedUsers = await userRepository.find({
+                select: ['password'],
+            });
 
             expect(savedUsers).toHaveLength(1);
 

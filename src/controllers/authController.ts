@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { Request, Response, NextFunction } from 'express';
 import { AuthRequest, LoginRequest, RegisterRequest } from '../types';
 import UserService from '../services/UserService';
@@ -21,7 +21,7 @@ export class AuthController {
         req: RegisterRequest,
         res: Response,
         next: NextFunction,
-    ): Promise<any> => {
+    ) => {
         try {
             const result = validationResult(req);
 
@@ -162,7 +162,10 @@ export class AuthController {
             // attach the user details to the response object
             const user = await this.userSerive.findById(userId);
 
-            res.json(user);
+            res.json({
+                ...user,
+                password: undefined, // param `password` won't be even show up in the request body if declared undefined
+            });
         } catch (e) {
             next(e);
         }
