@@ -90,6 +90,8 @@ out
 # Nuxt.js build / generate output
 .nuxt
 dist
+# add the public folder , with hosted jwks
+public
 
 # Gatsby files
 .cache/

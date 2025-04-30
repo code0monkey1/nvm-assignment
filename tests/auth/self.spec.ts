@@ -32,6 +32,12 @@ describe('GET auth/self', () => {
     afterAll(async () => {
         await connection.destroy();
     });
+
+    describe('when all fields are not present', () => {
+        it('should return status code 401 when cookies are not supplied with request', async () => {
+            await api.get(BASE_URL).expect(401);
+        });
+    });
     describe('When all fields are present', () => {
         it('should return status 200', async () => {
             //register a user

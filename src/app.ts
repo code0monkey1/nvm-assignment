@@ -4,8 +4,14 @@ import { HttpError } from 'http-errors';
 import logger from './config/logger';
 import authRouter from './routes/authRouter';
 import cookieParser from 'cookie-parser';
+import path from 'path';
 
 const app = express();
+app.use(
+    express.static(path.join(__dirname, '../public'), {
+        dotfiles: 'allow', // This allows serving files starting with a dot
+    }),
+);
 
 app.get('/', (_req, res, next: NextFunction) => {
     try {
@@ -29,7 +35,7 @@ app.use((err: HttpError, _req: Request, res: Response, _next: NextFunction) => {
      * HttpError has a statusCode attribute, but some other sort of error might not, so we set 500 as default
      **/
 
-    const statusCode = err.statusCode || 500;
+    const statusCode = err.statusCode || err.status || 500;
 
     // now create a uniform response type of an array of errors
     res.status(statusCode).json({
