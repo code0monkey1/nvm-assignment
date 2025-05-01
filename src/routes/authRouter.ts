@@ -12,6 +12,7 @@ import loginValidator from '../validators/login-validator';
 import CredentialService from '../services/CredentialService';
 
 import authenticate from '../middleware/authenticate';
+import refreshAuth from '../middleware/validateRefreshToken';
 
 const userRepository = AppDataSource.getRepository(User);
 const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
@@ -33,5 +34,7 @@ route.post('/register', registerValidator, authController.register);
 route.post('/login', loginValidator, authController.login);
 
 route.get('/self', authenticate, authController.self);
+
+route.get('/refresh', refreshAuth, authController.refresh);
 
 export default route;

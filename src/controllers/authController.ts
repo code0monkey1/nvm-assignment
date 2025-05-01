@@ -96,7 +96,6 @@ export class AuthController {
             const { password, email } = req.body;
 
             // check the validity of username and password
-
             const user = await this.userSerive.findByEmail(email);
 
             if (!user) {
@@ -114,7 +113,6 @@ export class AuthController {
             }
 
             // return the auth token and refresh token
-
             const payload: JwtPayload = {
                 sub: String(user.id), // stores the userId of the user creating the token
                 role: user.role,
@@ -165,6 +163,59 @@ export class AuthController {
                 ...user,
                 password: undefined, // param `password` won't be even show up in the request body if declared undefined
             });
+        } catch (e) {
+            next(e);
+        }
+    };
+
+    refresh = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const authRequest = req as AuthRequest;
+            // take the userId from the token, and get the user details
+
+            // delete previous refreshToken record from db
+            await this.tokenService.deleteRefreshToken(
+                Number(authRequest.auth.jti),
+            );
+
+            const userId = Number(authRequest.auth.sub);
+
+            // attach the user details to the response object
+            const user = await this.userSerive.findById(userId);
+
+            // return the auth token and refresh token
+            const payload: JwtPayload = {
+                sub: authRequest.auth.sub, // stores the userId of the user creating the token
+                role: authRequest.auth.role,
+            };
+
+            // create accessToken
+            const accessToken = this.tokenService.generateAccessToken(payload);
+
+            res.cookie('accessToken', accessToken, {
+                domain: 'localhost',
+                sameSite: 'strict',
+                maxAge: 1000 * 60 * 60, // 1 hour
+                httpOnly: true, // very important to prevent access to any client side code
+            });
+
+            // create refreshToken
+            const persistedRefreshToken =
+                await this.tokenService.persistRefreshToken(user);
+
+            const refreshToken = this.tokenService.generateRefreshToken(
+                payload,
+                String(persistedRefreshToken.id),
+            );
+
+            res.cookie('refreshToken', refreshToken, {
+                domain: 'localhost',
+                sameSite: 'strict',
+                maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
+                httpOnly: true, // very important to prevent access to any client side code
+            });
+
+            res.status(200).json({ id: user.id });
         } catch (e) {
             next(e);
         }

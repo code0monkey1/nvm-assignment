@@ -35,7 +35,7 @@ describe('POST auth/login', () => {
             };
 
             // create the user
-            const savedUser = await createUser(userData);
+            await createUser(userData);
 
             const response = await api
                 .post(BASE_URL)

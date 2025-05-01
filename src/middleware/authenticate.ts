@@ -2,6 +2,7 @@ import { expressjwt as jwt } from 'express-jwt';
 import { Config } from '../config';
 import jwksClient from 'jwks-rsa';
 import { Request } from 'express';
+import { AuthCookie } from '../types';
 // will parse the jwks and cookies
 export default jwt({
     secret: jwksClient.expressJwtSecret({
@@ -27,6 +28,3 @@ export default jwt({
         return accessToken;
     },
 });
-interface AuthCookie {
-    accessToken: string;
-}
