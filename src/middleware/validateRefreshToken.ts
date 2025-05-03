@@ -31,11 +31,17 @@ export default jwt({
             });
 
             return savedToken === null;
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (err) {
-            logger.error('Error while retrieveing refresh token', {
-                id: (token?.payload as JwtPayload).jti,
-            });
+            let errorMessage = '';
+
+            if (err instanceof Error) errorMessage = err.message;
+
+            logger.error(
+                `Error while retrieveing refresh token : ${errorMessage}`,
+                {
+                    id: (token?.payload as JwtPayload).jti,
+                },
+            );
         }
         return true;
     },

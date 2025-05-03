@@ -150,7 +150,28 @@ export class AuthController {
             next(e);
         }
     };
+    logout = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            // delete refreshToken from repository
+            const authRequest = req as AuthRequest;
+            // take the userId from the token, and get the user details
 
+            // delete previous refreshToken record from db
+            await this.tokenService.deleteRefreshToken(
+                Number(authRequest.auth.jti),
+            );
+
+            this.logger.info(`User with id:${authRequest.auth.sub} logged out`);
+
+            // clear cookies from response
+            res.clearCookie('accessToken');
+            res.clearCookie('refreshToken');
+
+            res.end();
+        } catch (e) {
+            next(e);
+        }
+    };
     self = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const authRequest = req as AuthRequest;

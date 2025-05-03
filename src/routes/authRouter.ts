@@ -10,9 +10,9 @@ import TokenService from '../services/TokenService';
 import { RefreshToken } from '../entity/RefreshToken';
 import loginValidator from '../validators/login-validator';
 import CredentialService from '../services/CredentialService';
-
 import authenticate from '../middleware/authenticate';
-import refreshAuth from '../middleware/validateRefreshToken';
+import validateRefreshToken from '../middleware/validateRefreshToken';
+import parseRefreshToken from '../middleware/parseRefreshToken';
 
 const userRepository = AppDataSource.getRepository(User);
 const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
@@ -33,8 +33,10 @@ route.post('/register', registerValidator, authController.register);
 
 route.post('/login', loginValidator, authController.login);
 
+route.post('/logout', parseRefreshToken, authController.logout);
+
 route.get('/self', authenticate, authController.self);
 
-route.get('/refresh', refreshAuth, authController.refresh);
+route.get('/refresh', validateRefreshToken, authController.refresh);
 
 export default route;
