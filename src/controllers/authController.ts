@@ -174,6 +174,8 @@ export class AuthController {
     };
     self = async (req: Request, res: Response, next: NextFunction) => {
         try {
+            // Check the Set-Cookie header in the response
+
             const authRequest = req as AuthRequest;
             // take the userId from the token, and get the user details
             const userId = Number(authRequest.auth.sub);

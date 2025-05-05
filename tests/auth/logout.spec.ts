@@ -102,7 +102,6 @@ describe('POST auth/logout', () => {
         };
         const user = await createUser(userData);
 
-        // create refresh
         // create refreshToken
         const refreshTokenRepository =
             AppDataSource.getRepository(RefreshToken);
@@ -144,8 +143,8 @@ describe('POST auth/logout', () => {
         expect(cookies).toBeDefined();
 
         // Verify that the cookies include HttpOnly flags
-        let accessToken = '';
-        let refreshToken = '';
+        let accessToken = null as null | String;
+        let refreshToken = null as null | String;
 
         cookies.forEach((cookie) => {
             if (cookie.startsWith('accessToken=')) {
@@ -156,6 +155,7 @@ describe('POST auth/logout', () => {
             }
         });
 
+        // should set the accessToken and refreshToken to blank values
         expect(accessToken).toBe('');
         expect(refreshToken).toBe('');
     });

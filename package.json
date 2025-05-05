@@ -3,15 +3,17 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "test": "NODE_ENV=test jest --watch --detectOpenHandles --runInBand",
-        "dev": "NODE_ENV=dev nodemon src/server.ts",
+        "test": "cross-env NODE_ENV=test jest --watch --detectOpenHandles --runInBand",
+        "dev": "cross-env NODE_ENV=dev nodemon src/server.ts",
         "format:fix": "prettier . --write",
         "format:check": "prettier . --check",
         "lint:fix": "eslint . --fix",
         "lint:check": "eslint .",
         "prepare": "husky",
         "start": "ts-node src/index.ts",
-        "typeorm": "typeorm-ts-node-commonjs"
+        "migration:generate": "cross-env NODE_ENV=dev typeorm-ts-node-commonjs migration:generate",
+        "migration:run":"typeorm-ts-node-commonjs migration:run",
+        "migration:create":"typeorm-ts-node-commonjs migration:create"
     },
     "repository": {
         "type": "git",
@@ -58,6 +60,7 @@
     "dependencies": {
         "bcrypt": "^5.1.1",
         "cookie-parser": "^1.4.7",
+        "cross-env": "^7.0.3",
         "dotenv": "^16.4.7",
         "express": "^5.1.0",
         "express-jwt": "^8.5.1",
