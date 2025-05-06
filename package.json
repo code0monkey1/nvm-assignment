@@ -12,8 +12,8 @@
         "prepare": "husky",
         "start": "ts-node src/index.ts",
         "migration:generate": "cross-env NODE_ENV=dev typeorm-ts-node-commonjs migration:generate",
-        "migration:run":"typeorm-ts-node-commonjs migration:run",
-        "migration:create":"typeorm-ts-node-commonjs migration:create"
+        "migration:run": "typeorm-ts-node-commonjs migration:run",
+        "migration:create": "typeorm-ts-node-commonjs migration:create"
     },
     "repository": {
         "type": "git",
