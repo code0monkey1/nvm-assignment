@@ -3,6 +3,7 @@ import express, { NextFunction, Request, Response, json } from 'express';
 import { HttpError } from 'http-errors';
 import logger from './config/logger';
 import authRouter from './routes/authRouter';
+import tenantRouter from './routes/tenantRouter';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 
@@ -24,6 +25,7 @@ app.use(json());
 app.use(cookieParser());
 
 app.use('/auth', authRouter);
+app.use('/tenants', tenantRouter);
 
 // global error middleware defined at the end of all routes
 

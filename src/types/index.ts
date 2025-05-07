@@ -5,6 +5,12 @@ export interface UserData {
     lastName: string;
     email: string;
     password: string;
+    role?: 'customer' | 'admin' | 'manager';
+}
+
+export interface TenantData {
+    address: string;
+    name: string;
 }
 
 export interface RegisterRequest extends Request {

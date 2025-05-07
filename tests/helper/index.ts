@@ -15,7 +15,7 @@ export async function createUser(userData: UserData) {
 
     const user = await userRepo.save({
         ...userData,
-        role: ROLES.CUSTOMER,
+        role: userData.role || ROLES.CUSTOMER,
         password: hashedPassword,
     });
 
