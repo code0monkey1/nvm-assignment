@@ -33,116 +33,111 @@ describe('POST /tenants', () => {
         await connection.destroy();
     });
 
-    describe('POST /tenants ', () => {
-        describe('If all info correct', () => {
-            it('should return 201 created status code', async () => {
-                // get the token for the user
-                const accessToken = jwksMock.token({
-                    sub: `1`,
-                    role: ROLES.ADMIN,
-                });
-
-                const tenantData: TenantData = {
-                    name: 'tenant_1',
-                    address: 'tenant_address',
-                };
-
-                await api
-                    .post(BASE_URL)
-                    .set('Cookie', [`accessToken=${accessToken};`])
-                    .send(tenantData)
-                    .expect(201);
+    describe('If all info correct', () => {
+        it('should return 201 created status code', async () => {
+            // get the token for the user
+            const accessToken = jwksMock.token({
+                sub: `1`,
+                role: ROLES.ADMIN,
             });
 
-            it('should create a new tenant in the DB', async () => {
-                // get the token for the user
-                const accessToken = jwksMock.token({
-                    sub: `1`,
-                    role: ROLES.ADMIN,
-                });
+            const tenantData: TenantData = {
+                name: 'tenant_1',
+                address: 'tenant_address',
+            };
 
-                const tenantData: TenantData = {
-                    name: 'tenant_1',
-                    address: 'tenant_address',
-                };
-
-                await api
-                    .post(BASE_URL)
-                    .send(tenantData)
-                    .set('Cookie', [`accessToken=${accessToken};`])
-                    .expect(201);
-
-                // expect tenant to be created
-
-                const tenants = await getAllTenants();
-
-                expect(tenants).toHaveLength(1);
-
-                expect(tenants[0].name).toBe(tenantData.name);
-            });
+            await api
+                .post(BASE_URL)
+                .set('Cookie', [`accessToken=${accessToken};`])
+                .send(tenantData)
+                .expect(201);
         });
 
-        describe('If all info not correct', () => {
-            it('should return 401 status without an auth token', async () => {
-                // get the token for the user
-                await api.post(BASE_URL).expect(401);
+        it('should create a new tenant in the DB', async () => {
+            // get the token for the user
+            const accessToken = jwksMock.token({
+                sub: `1`,
+                role: ROLES.ADMIN,
             });
-            it('should return 403 for non-admin roles trying to create tenant', async () => {
-                // get the token for the user
 
-                const accessToken = jwksMock.token({
-                    sub: `1`,
-                    role: ROLES.CUSTOMER,
-                });
+            const tenantData: TenantData = {
+                name: 'tenant_1',
+                address: 'tenant_address',
+            };
 
-                await api
-                    .post(BASE_URL)
-                    .set('Cookie', [`accessToken=${accessToken};`])
-                    .expect(403);
+            await api
+                .post(BASE_URL)
+                .send(tenantData)
+                .set('Cookie', [`accessToken=${accessToken};`])
+                .expect(201);
+
+            // expect tenant to be created
+
+            const tenants = await getAllTenants();
+
+            expect(tenants).toHaveLength(1);
+
+            expect(tenants[0].name).toBe(tenantData.name);
+        });
+    });
+
+    describe('If all info not correct', () => {
+        it('should return 401 status without an auth token', async () => {
+            // get the token for the user
+            await api.post(BASE_URL).expect(401);
+        });
+        it('should return 403 for non-admin roles trying to create tenant', async () => {
+            // get the token for the user
+
+            const accessToken = jwksMock.token({
+                sub: `1`,
+                role: ROLES.CUSTOMER,
             });
+
+            await api
+                .post(BASE_URL)
+                .set('Cookie', [`accessToken=${accessToken};`])
+                .expect(403);
+        });
+    });
+
+    describe('validation errors', () => {
+        it('should return 400 status with validation error if `name is missing` ', async () => {
+            const userData = {
+                address: '12345678',
+            };
+
+            const accessToken = jwksMock.token({
+                sub: `1`,
+                role: ROLES.ADMIN,
+            });
+
+            const result = await api
+                .post(BASE_URL)
+                .set('Cookie', [`accessToken=${accessToken};`])
+                .send(userData)
+                .expect(400);
+
+            await assertHasErrorMessage(result, 'tenant name is missing');
         });
 
-        describe('validation errors', () => {
-            it('should return 400 status with validation error if `name is missing` ', async () => {
-                const userData = {
-                    address: '12345678',
-                };
+        it('should return 400 status with validation error `address is missing`', async () => {
+            const userData = {
+                name: 'some person',
+            };
 
-                const accessToken = jwksMock.token({
-                    sub: `1`,
-                    role: ROLES.ADMIN,
-                });
-
-                const result = await api
-                    .post(BASE_URL)
-                    .set('Cookie', [`accessToken=${accessToken};`])
-                    .send(userData)
-                    .expect(400);
-
-                await assertHasErrorMessage(result, 'tenant name is missing');
+            const accessToken = jwksMock.token({
+                sub: `1`,
+                role: ROLES.ADMIN,
             });
 
-            it('should return 400 status with validation error `address is missing`', async () => {
-                const userData = {
-                    name: 'some person',
-                };
+            const result = await api
+                .post(BASE_URL)
+                .set('Cookie', [`accessToken=${accessToken};`])
+                .send(userData)
+                .expect(400);
 
-                const accessToken = jwksMock.token({
-                    sub: `1`,
-                    role: ROLES.ADMIN,
-                });
-
-                const result = await api
-                    .post(BASE_URL)
-                    .set('Cookie', [`accessToken=${accessToken};`])
-                    .send(userData)
-                    .expect(400);
-
-                await assertHasErrorMessage(
-                    result,
-                    'tenant address is missing',
-                );
-            });
+            await assertHasErrorMessage(result, 'tenant address is missing');
         });
     });
 });

@@ -4,6 +4,7 @@ import { Config } from '../config';
 import { Repository } from 'typeorm';
 import { RefreshToken } from '../entity/RefreshToken';
 import { User } from '../entity/User';
+import { Response } from 'express';
 
 class TokenService {
     constructor(
@@ -60,6 +61,30 @@ class TokenService {
 
     deleteRefreshToken = async (id: number) => {
         return await this.refreshTokenRepository.delete({ id });
+    };
+
+    setTokens = async (res: Response, user: User, payload: JwtPayload) => {
+        // Generate and set access token
+        const accessToken = this.generateAccessToken(payload);
+        res.cookie('accessToken', accessToken, {
+            domain: 'localhost',
+            sameSite: 'strict',
+            maxAge: 1000 * 60 * 60, // 1 hour
+            httpOnly: true,
+        });
+
+        // Generate and set refresh token
+        const persistedRefreshToken = await this.persistRefreshToken(user);
+        const refreshToken = this.generateRefreshToken(
+            payload,
+            String(persistedRefreshToken.id),
+        );
+        res.cookie('refreshToken', refreshToken, {
+            domain: 'localhost',
+            sameSite: 'strict',
+            maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
+            httpOnly: true,
+        });
     };
 }
 

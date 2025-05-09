@@ -49,34 +49,11 @@ export class AuthController {
             });
 
             const payload: JwtPayload = {
-                sub: String(savedUser.id), // stores the userId of the user creating the token
+                sub: String(savedUser.id),
                 role: savedUser.role,
             };
-            // create accessToken
-            const accessToken = this.tokenService.generateAccessToken(payload);
 
-            res.cookie('accessToken', accessToken, {
-                domain: 'localhost',
-                sameSite: 'strict',
-                maxAge: 1000 * 60 * 60, // 1 hour
-                httpOnly: true, // very important to prevent access to any client side code
-            });
-
-            // create refreshToken
-            const persistedRefreshToken =
-                await this.tokenService.persistRefreshToken(savedUser);
-
-            const refreshToken = this.tokenService.generateRefreshToken(
-                payload,
-                String(persistedRefreshToken.id),
-            );
-
-            res.cookie('refreshToken', refreshToken, {
-                domain: 'localhost',
-                sameSite: 'strict',
-                maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
-                httpOnly: true, // very important to prevent access to any client side code
-            });
+            await this.tokenService.setTokens(res, savedUser, payload);
 
             this.logger.info(`User has been created with id:${savedUser.id}`);
 
@@ -88,17 +65,15 @@ export class AuthController {
 
     login = async (req: LoginRequest, res: Response, next: NextFunction) => {
         try {
-            // check if the given user info is valid
             const result = validationResult(req);
 
             if (!result.isEmpty()) {
                 res.status(400).json({ errors: result.array() });
-                return; // Ensure the function exits after sending the response
+                return;
             }
 
             const { password, email } = req.body;
 
-            // check the validity of username and password
             const user = await this.userSerive.findByEmail(email);
 
             if (!user) {
@@ -115,36 +90,12 @@ export class AuthController {
                 throw createHttpError(400, 'Email or Password is Invalid');
             }
 
-            // return the auth token and refresh token
             const payload: JwtPayload = {
-                sub: String(user.id), // stores the userId of the user creating the token
+                sub: String(user.id),
                 role: user.role,
             };
-            // create accessToken
-            const accessToken = this.tokenService.generateAccessToken(payload);
 
-            res.cookie('accessToken', accessToken, {
-                domain: 'localhost',
-                sameSite: 'strict',
-                maxAge: 1000 * 60 * 60, // 1 hour
-                httpOnly: true, // very important to prevent access to any client side code
-            });
-
-            // create refreshToken
-            const persistedRefreshToken =
-                await this.tokenService.persistRefreshToken(user);
-
-            const refreshToken = this.tokenService.generateRefreshToken(
-                payload,
-                String(persistedRefreshToken.id),
-            );
-
-            res.cookie('refreshToken', refreshToken, {
-                domain: 'localhost',
-                sameSite: 'strict',
-                maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
-                httpOnly: true, // very important to prevent access to any client side code
-            });
+            await this.tokenService.setTokens(res, user, payload);
 
             this.logger.info(`User with id:${user.id} logged in`);
 
@@ -153,20 +104,17 @@ export class AuthController {
             next(e);
         }
     };
+
     logout = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            // delete refreshToken from repository
             const authRequest = req as AuthRequest;
-            // take the userId from the token, and get the user details
 
-            // delete previous refreshToken record from db
             await this.tokenService.deleteRefreshToken(
                 Number(authRequest.auth.jti),
             );
 
             this.logger.info(`User with id:${authRequest.auth.sub} logged out`);
 
-            // clear cookies from response
             res.clearCookie('accessToken');
             res.clearCookie('refreshToken');
 
@@ -175,19 +123,16 @@ export class AuthController {
             next(e);
         }
     };
+
     self = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            // Check the Set-Cookie header in the response
-
             const authRequest = req as AuthRequest;
-            // take the userId from the token, and get the user details
             const userId = Number(authRequest.auth.sub);
-            // attach the user details to the response object
             const user = await this.userSerive.findById(userId);
 
             res.json({
                 ...user,
-                password: undefined, // param `password` won't be even show up in the request body if declared undefined
+                password: undefined,
             });
         } catch (e) {
             next(e);
@@ -197,49 +142,20 @@ export class AuthController {
     refresh = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const authRequest = req as AuthRequest;
-            // take the userId from the token, and get the user details
 
-            // delete previous refreshToken record from db
             await this.tokenService.deleteRefreshToken(
                 Number(authRequest.auth.jti),
             );
 
             const userId = Number(authRequest.auth.sub);
-
-            // attach the user details to the response object
             const user = await this.userSerive.findById(userId);
 
-            // return the auth token and refresh token
             const payload: JwtPayload = {
-                sub: authRequest.auth.sub, // stores the userId of the user creating the token
+                sub: authRequest.auth.sub,
                 role: authRequest.auth.role,
             };
 
-            // create accessToken
-            const accessToken = this.tokenService.generateAccessToken(payload);
-
-            res.cookie('accessToken', accessToken, {
-                domain: 'localhost',
-                sameSite: 'strict',
-                maxAge: 1000 * 60 * 60, // 1 hour
-                httpOnly: true, // very important to prevent access to any client side code
-            });
-
-            // create refreshToken
-            const persistedRefreshToken =
-                await this.tokenService.persistRefreshToken(user);
-
-            const refreshToken = this.tokenService.generateRefreshToken(
-                payload,
-                String(persistedRefreshToken.id),
-            );
-
-            res.cookie('refreshToken', refreshToken, {
-                domain: 'localhost',
-                sameSite: 'strict',
-                maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
-                httpOnly: true, // very important to prevent access to any client side code
-            });
+            await this.tokenService.setTokens(res, user, payload);
 
             res.status(200).json({ id: user.id });
         } catch (e) {

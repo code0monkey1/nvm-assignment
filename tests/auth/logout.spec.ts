@@ -7,7 +7,7 @@ import { createUser } from '../helper';
 import { Config } from '../../src/config';
 import { JwtPayload, sign, SignOptions } from 'jsonwebtoken';
 
-describe('POST auth/logout', () => {
+describe('POST /auth/logout', () => {
     const api = request(app);
     const BASE_URL = '/auth/logout';
 
