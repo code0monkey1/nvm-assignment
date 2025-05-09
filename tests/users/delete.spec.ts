@@ -55,7 +55,7 @@ describe('DELETE /users/:id', () => {
             await api
                 .delete(`${BASE_URL}/${user.id}`)
                 .set('Cookie', [`accessToken=${accessToken};`])
-                .expect(200);
+                .expect(204);
         });
 
         it('should delete user if the role in the access token is admin', async () => {
@@ -74,11 +74,11 @@ describe('DELETE /users/:id', () => {
                 role: ROLES.ADMIN,
             });
 
-            // create manager
+            // delete user
             await api
                 .delete(`${BASE_URL}/${user.id}`)
                 .set('Cookie', [`accessToken=${accessToken};`])
-                .expect(200);
+                .expect(204);
         });
 
         it('should cascade delete all associated refreshTokens when a user is deleted', async () => {
@@ -109,7 +109,7 @@ describe('DELETE /users/:id', () => {
             await api
                 .delete(`${BASE_URL}/${user.id}`)
                 .set('Cookie', [`accessToken=${accessToken};`])
-                .expect(200);
+                .expect(204);
 
             const refreshTokens = await getAllRefreshTokens();
 

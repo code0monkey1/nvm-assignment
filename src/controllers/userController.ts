@@ -53,7 +53,7 @@ export class UserController {
 
             await this.userService.deleteById(Number(req.params.id));
 
-            res.end();
+            res.status(204).end();
         } catch (e) {
             next(e);
         }

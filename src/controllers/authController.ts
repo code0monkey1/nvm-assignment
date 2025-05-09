@@ -118,7 +118,7 @@ export class AuthController {
             res.clearCookie('accessToken');
             res.clearCookie('refreshToken');
 
-            res.end();
+            res.status(200).end();
         } catch (e) {
             next(e);
         }
@@ -148,6 +148,7 @@ export class AuthController {
             );
 
             const userId = Number(authRequest.auth.sub);
+
             const user = await this.userSerive.findById(userId);
 
             const payload: JwtPayload = {

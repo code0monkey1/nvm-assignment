@@ -75,6 +75,7 @@ class TokenService {
 
         // Generate and set refresh token
         const persistedRefreshToken = await this.persistRefreshToken(user);
+
         const refreshToken = this.generateRefreshToken(
             payload,
             String(persistedRefreshToken.id),
