@@ -4,9 +4,8 @@ import app from '../../src/app';
 import { DataSource } from 'typeorm';
 import { createJWKSMock } from 'mock-jwks';
 import { ROLES } from '../../src/constants';
-import { Tenant } from '../../src/entity/Tenant';
 import { TenantData } from '../../src/types';
-import { assertHasErrorMessage } from '../helper';
+import { assertHasErrorMessage, getAllTenants } from '../helper';
 
 describe('POST /tenants', () => {
     const api = request(app);
@@ -75,9 +74,7 @@ describe('POST /tenants', () => {
 
                 // expect tenant to be created
 
-                const tenantRepository = AppDataSource.getRepository(Tenant);
-
-                const tenants = await tenantRepository.find({});
+                const tenants = await getAllTenants();
 
                 expect(tenants).toHaveLength(1);
 
@@ -90,7 +87,7 @@ describe('POST /tenants', () => {
                 // get the token for the user
                 await api.post(BASE_URL).expect(401);
             });
-            it('should return 401 for non-admin roles trying to create tenant', async () => {
+            it('should return 403 for non-admin roles trying to create tenant', async () => {
                 // get the token for the user
 
                 const accessToken = jwksMock.token({
@@ -106,7 +103,7 @@ describe('POST /tenants', () => {
         });
 
         describe('validation errors', () => {
-            it('should throw validation error if email id is invalid', async () => {
+            it('should return 400 status with validation error if `name is missing` ', async () => {
                 const userData = {
                     address: '12345678',
                 };
@@ -123,6 +120,28 @@ describe('POST /tenants', () => {
                     .expect(400);
 
                 await assertHasErrorMessage(result, 'tenant name is missing');
+            });
+
+            it('should return 400 status with validation error `address is missing`', async () => {
+                const userData = {
+                    name: 'some person',
+                };
+
+                const accessToken = jwksMock.token({
+                    sub: `1`,
+                    role: ROLES.ADMIN,
+                });
+
+                const result = await api
+                    .post(BASE_URL)
+                    .set('Cookie', [`accessToken=${accessToken};`])
+                    .send(userData)
+                    .expect(400);
+
+                await assertHasErrorMessage(
+                    result,
+                    'tenant address is missing',
+                );
             });
         });
     });

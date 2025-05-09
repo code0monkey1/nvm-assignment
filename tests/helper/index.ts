@@ -7,6 +7,7 @@ import { RefreshToken } from '../../src/entity/RefreshToken';
 import { User } from '../../src/entity/User';
 import { UserData } from '../../src/types';
 import bcrypt from 'bcrypt';
+import { Tenant } from '../../src/entity/Tenant';
 
 export async function createUser(userData: UserData) {
     // store user
@@ -76,4 +77,17 @@ export async function getSignedRefreshToken(persistedRefreshToken, user) {
     );
 
     return prev_refreshToken;
+}
+
+export async function getAllTenants() {
+    const tenantRepository = AppDataSource.getRepository(Tenant);
+
+    const tenants = await tenantRepository.find({});
+    return tenants;
+}
+export async function getAllUsers() {
+    const usersRepository = AppDataSource.getRepository(User);
+
+    const users = await usersRepository.find({});
+    return users;
 }
