@@ -22,6 +22,7 @@ export async function createUser(userData: UserData) {
 
     return user;
 }
+
 export async function assertUserCreated(userData) {
     const userRepository = AppDataSource.getRepository(User);
     const savedUsers = await userRepository.find();

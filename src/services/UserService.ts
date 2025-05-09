@@ -60,6 +60,10 @@ class UserService {
     findByEmail = async (email: string) => {
         return await this.userRepository.findOneBy({ email });
     };
+
+    deleteById = async (id: number) => {
+        await this.userRepository.delete(id);
+    };
 }
 
 export default UserService;

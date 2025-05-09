@@ -1,8 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { Logger } from 'winston';
-import { UserData } from '../types';
+import { AuthRequest, UserData } from '../types';
 import { validationResult } from 'express-validator';
 import UserService from '../services/UserService';
+import createHttpError from 'http-errors';
+import { ROLES } from '../constants';
 
 export class UserController {
     constructor(
@@ -32,6 +34,26 @@ export class UserController {
             );
 
             res.status(201).json({ id: savedUser.id });
+        } catch (e) {
+            next(e);
+        }
+    };
+
+    delete = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const authId = (req as AuthRequest).auth.sub;
+            const authRole = (req as AuthRequest).auth.role;
+
+            if (!(req.params.id == authId || authRole == ROLES.ADMIN)) {
+                throw createHttpError(
+                    401,
+                    `User not allowed to perform this operation`,
+                );
+            }
+
+            await this.userService.deleteById(Number(req.params.id));
+
+            res.end();
         } catch (e) {
             next(e);
         }

@@ -25,4 +25,6 @@ route.post(
     userController.create,
 );
 
+route.delete('/:id', authenticate, userController.delete);
+
 export default route;
