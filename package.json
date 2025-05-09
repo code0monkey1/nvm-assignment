@@ -3,7 +3,8 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "test": "cross-env NODE_ENV=test jest --watch --detectOpenHandles --runInBand",
+        "test": "jest --no-cache --coverage --all --runInBand",
+        "test:watch": "cross-env NODE_ENV=test jest --watch --detectOpenHandles --runInBand",
         "dev": "cross-env NODE_ENV=dev nodemon src/server.ts",
         "format:fix": "prettier . --write",
         "build":"rm -rf ./dist && tsc",
