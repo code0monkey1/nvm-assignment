@@ -132,7 +132,7 @@ describe('DELETE /users/:id', () => {
             const user = await createUser(userData);
 
             const accessToken = jwksMock.token({
-                sub: '2',
+                sub: '28923842',
                 role: ROLES.CUSTOMER,
             });
 
