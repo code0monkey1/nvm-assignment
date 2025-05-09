@@ -2,9 +2,7 @@ import { Repository } from 'typeorm';
 import { UserData } from '../types';
 import { User } from '../entity/User';
 import createHttpError from 'http-errors';
-import { ROLES } from '../constants';
 import EncryptionService from './EncriptionService';
-
 class UserService {
     // we get the userRepositry type from TypeOrm ( we can injext AppDataSource.getRepository<User> into it)
     constructor(
@@ -24,7 +22,14 @@ class UserService {
 
         return user;
     };
-    create = async ({ firstName, lastName, email, password }: UserData) => {
+    create = async ({
+        firstName,
+        lastName,
+        email,
+        password,
+        tenantId,
+        role,
+    }: UserData) => {
         const hashedPassword =
             await this.encryptionService.generateHash(password);
 
@@ -45,7 +50,8 @@ class UserService {
             lastName,
             email,
             password: hashedPassword,
-            role: ROLES.CUSTOMER,
+            role,
+            tenant: tenantId ? { id: tenantId } : undefined, // this needs a tenantObject to be passed in OR undefined
         });
 
         return savedUser;

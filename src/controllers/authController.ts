@@ -7,6 +7,7 @@ import { JwtPayload } from 'jsonwebtoken';
 import TokenService from '../services/TokenService';
 import createHttpError from 'http-errors';
 import CredentialService from '../services/CredentialService';
+import { ROLES } from '../constants';
 
 export class AuthController {
     constructor(
@@ -29,7 +30,7 @@ export class AuthController {
                 return; // Ensure the function exits after sending the response
             }
 
-            const { firstName, lastName, password, email } = req.body;
+            const { firstName, lastName, password, email, tenantId } = req.body;
 
             this.logger.debug('User Info', {
                 firstName,
@@ -43,6 +44,8 @@ export class AuthController {
                 lastName,
                 password,
                 email,
+                tenantId,
+                role: ROLES.CUSTOMER,
             });
 
             const payload: JwtPayload = {

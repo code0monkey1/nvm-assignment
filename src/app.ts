@@ -6,6 +6,7 @@ import authRouter from './routes/authRouter';
 import tenantRouter from './routes/tenantRouter';
 import cookieParser from 'cookie-parser';
 import path from 'path';
+import userRouter from './routes/userRouter';
 
 const app = express();
 app.use(
@@ -26,6 +27,7 @@ app.use(cookieParser());
 
 app.use('/auth', authRouter);
 app.use('/tenants', tenantRouter);
+app.use('/users', userRouter);
 
 // global error middleware defined at the end of all routes
 
