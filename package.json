@@ -6,6 +6,7 @@
         "test": "cross-env NODE_ENV=test jest --watch --detectOpenHandles --runInBand",
         "dev": "cross-env NODE_ENV=dev nodemon src/server.ts",
         "format:fix": "prettier . --write",
+        "build":"rm -rf ./dist && tsc",
         "format:check": "prettier . --check",
         "lint:fix": "eslint . --fix",
         "lint:check": "eslint .",
