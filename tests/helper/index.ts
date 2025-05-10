@@ -6,13 +6,13 @@ import { ROLES } from '../../src/constants';
 import { RefreshToken } from '../../src/entity/RefreshToken';
 import { User } from '../../src/entity/User';
 import { UserData } from '../../src/types';
-import bcrypt from 'bcrypt';
+import bcryptjs from 'bcryptjs';
 import { Tenant } from '../../src/entity/Tenant';
 
 export async function createUser(userData: UserData) {
     // store user
     const userRepo = AppDataSource.getRepository(User);
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    const hashedPassword = await bcryptjs.hash(userData.password, 10);
 
     const user = await userRepo.save({
         ...userData,
