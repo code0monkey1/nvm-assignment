@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { RefreshToken } from '../entity/RefreshToken';
 import { User } from '../entity/User';
 import { Response } from 'express';
+import createHttpError from 'http-errors';
 
 class TokenService {
     constructor(
@@ -19,9 +20,12 @@ class TokenService {
             issuer: 'auth-service',
         };
 
+        if (!Config.PRIVATE_KEY) {
+            throw createHttpError(500, 'PRIVATE_KEY is not set');
+        }
         const accessToken = sign(
             payload,
-            Config.PRIVATE_KEY!,
+            Config.PRIVATE_KEY,
             accessTokenSignOptions,
         );
 
