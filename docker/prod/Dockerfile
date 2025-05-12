@@ -12,7 +12,7 @@ COPY package*.json ./
 # ( LHS represents your file system , RHS is image file system (i.e /app folder ) )
 # Here , the package.json and package.lock.json is copied into the /app folder of the image 
 
-RUN npm ci
+RUN npm ci --ignore-scripts
 # The `ci` ensures that it installs the exact version of packages as mentioned in the package.lock.json file
 
 COPY . .
@@ -42,7 +42,7 @@ COPY --from=builder /app/dist ./
 # This is where we copy the dist folder built in the previous step ( builder )
 # As the dist folder is present in the /app folder , we copy it from there to the current image's file system
 
-EXPOSE 5500
+EXPOSE 3000
 # This is just used to inform which port we choose to expose when running this image
 
 CMD ["node","src/server.js"]
