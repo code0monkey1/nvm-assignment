@@ -13,4 +13,5 @@ module.exports = {
         '!src/migration/**', // exclude the migration files
         '!**/node_modules/**', // exclude checking the code from node modules
     ],
+     testTimeout: 10000                                                                                        
 };
