@@ -1,1 +1,1 @@
-Auth Service for a Pizza Delivery Microservice 
+Auth Service for a Pizza Delivery Microservice App
