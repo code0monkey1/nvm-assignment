@@ -7,8 +7,17 @@ import tenantRouter from './routes/tenantRouter';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import userRouter from './routes/userRouter';
+import cors from 'cors';
+import { Config } from './config';
 
 const app = express();
+
+app.use(
+    cors({
+        origin: [Config.CLIENT_URL!],
+        credentials: true, // ensures that only the request with credentials are allowed
+    }),
+);
 app.use(
     express.static(path.join(__dirname, '../public'), {
         dotfiles: 'allow', // This allows serving files starting with a dot
