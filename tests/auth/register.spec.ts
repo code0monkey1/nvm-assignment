@@ -11,6 +11,8 @@ import {
     isJwt,
 } from '../helper';
 import { RefreshToken } from '../../src/entity/RefreshToken';
+import { createAdmin } from '../../src/utils/index';
+import { Config } from '../../src/config';
 
 describe('POST /auth/register', () => {
     const api = request(app);
@@ -33,6 +35,20 @@ describe('POST /auth/register', () => {
     });
 
     describe('when all data is present', () => {
+        it('should create an admin user on startup', async () => {
+            await createAdmin();
+
+            const userRepository = connection.getRepository(User);
+
+            const adminUsers = await userRepository.find({
+                where: {
+                    email: Config.ADMIN_EMAIL,
+                },
+            });
+
+            expect(adminUsers).toHaveLength(1);
+        });
+
         it('should persist registered users data in database', async () => {
             //arrange
             const userData = {

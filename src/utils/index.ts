@@ -20,5 +20,7 @@ export const createAdmin = async () => {
         email: Config.ADMIN_EMAIL!,
         password: await bcrypt.hash(Config.ADMIN_PASSWORD!, 10),
         role: ROLES.ADMIN,
+        firstName: 'admin',
+        lastName: 'admin',
     });
 };
