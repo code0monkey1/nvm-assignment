@@ -31,6 +31,7 @@ app.get('/', (_req, res, next: NextFunction) => {
         next(e);
     }
 });
+
 app.use(json());
 app.use(cookieParser());
 
