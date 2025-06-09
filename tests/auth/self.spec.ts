@@ -2,9 +2,10 @@ import request from 'supertest';
 import app from '../../src/app';
 import { DataSource } from 'typeorm';
 import { AppDataSource } from '../../src/config/data-source';
-import { createUser } from '../helper';
+import { createTenant, createUser } from '../helper';
 import { createJWKSMock } from 'mock-jwks';
 import { ROLES } from '../../src/constants';
+import { TenantData, UserData } from '../../src/types';
 describe('GET auth/self', () => {
     let jwksMock: ReturnType<typeof createJWKSMock>;
     const api = request(app);
@@ -87,6 +88,40 @@ describe('GET auth/self', () => {
             // check if userData matches with self body
             expect(response.body.id).toBe(user.id);
             expect(response.body.role).toBe(user.role);
+        });
+
+        it('should return tenant info of manager user', async () => {
+            const tenantInfo: TenantData = {
+                address: 'tenant_address',
+                name: 'tenant_name',
+            };
+            const tenant = await createTenant(tenantInfo);
+
+            const managerInfo: UserData = {
+                email: 'manager@gmail.com',
+                firstName: 'manager_first_name',
+                lastName: 'manager_last_name',
+                password: 'manager123456',
+                role: 'manager',
+                tenantId: tenant.id,
+            };
+
+            const manager = await createUser(managerInfo);
+
+            const accessToken = jwksMock.token({
+                sub: String(manager.id),
+                role: ROLES.MANAGER,
+            });
+
+            // add token to cookie
+            const response = await api
+                .get(BASE_URL)
+                .expect(200)
+                .set('Cookie', [`accessToken=${accessToken};`]);
+
+            // check if tenantInfo is retrieved
+            expect(response.body.tenant.name).toBe(tenantInfo.name);
+            expect(response.body.tenant.address).toBe(tenantInfo.address);
         });
 
         it('should not return the password field', async () => {

@@ -5,7 +5,7 @@ import { AppDataSource } from '../../src/config/data-source';
 import { ROLES } from '../../src/constants';
 import { RefreshToken } from '../../src/entity/RefreshToken';
 import { User } from '../../src/entity/User';
-import { UserData } from '../../src/types';
+import { TenantData, UserData } from '../../src/types';
 import bcryptjs from 'bcryptjs';
 import { Tenant } from '../../src/entity/Tenant';
 
@@ -18,6 +18,7 @@ export async function createUser(userData: UserData) {
         ...userData,
         role: userData.role || ROLES.CUSTOMER,
         password: hashedPassword,
+        tenant: userData.tenantId ? { id: userData.tenantId } : undefined,
     });
 
     return user;
@@ -91,4 +92,9 @@ export async function getAllUsers() {
 
     const users = await usersRepository.find({});
     return users;
+}
+export async function createTenant(tenantData: TenantData) {
+    const tenantRepository = AppDataSource.getRepository(Tenant);
+    const tenant = await tenantRepository.save(tenantData);
+    return tenant;
 }

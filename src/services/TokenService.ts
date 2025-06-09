@@ -16,7 +16,7 @@ class TokenService {
         // create accessToken
         const accessTokenSignOptions: SignOptions = {
             algorithm: 'RS256',
-            expiresIn: '1h', // 1 hour,
+            expiresIn: '1m', // 1 hour,
             issuer: 'auth-service',
         };
 
@@ -70,6 +70,7 @@ class TokenService {
     setTokens = async (res: Response, user: User, payload: JwtPayload) => {
         // Generate and set access token
         const accessToken = this.generateAccessToken(payload);
+
         res.cookie('accessToken', accessToken, {
             domain: 'localhost',
             sameSite: 'strict',

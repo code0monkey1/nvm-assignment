@@ -3,6 +3,7 @@ import { Config } from '../config';
 import { AppDataSource } from '../config/data-source';
 import { ROLES } from '../constants';
 import { User } from '../entity/User';
+import logger from '../config/logger';
 
 export const createAdmin = async () => {
     // create a new admin user on startup if it does not alreay exist
@@ -23,4 +24,6 @@ export const createAdmin = async () => {
         firstName: 'admin',
         lastName: 'admin',
     });
+
+    logger.info(' ✅ New Admin User Created');
 };

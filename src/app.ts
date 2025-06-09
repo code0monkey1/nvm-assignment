@@ -18,6 +18,7 @@ app.use(
         credentials: true, // ensures that only the request with credentials are allowed
     }),
 );
+
 app.use(
     express.static(path.join(__dirname, '../public'), {
         dotfiles: 'allow', // This allows serving files starting with a dot

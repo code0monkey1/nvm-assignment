@@ -5,10 +5,7 @@ import { DataSource } from 'typeorm';
 import { createJWKSMock } from 'mock-jwks';
 import { ROLES } from '../../src/constants';
 import { User } from '../../src/entity/User';
-import { assertHasErrorMessage, getAllUsers } from '../helper';
-import { Tenant } from '../../src/entity/Tenant';
-import { TenantData } from '../../src/types';
-
+import { assertHasErrorMessage, createTenant, getAllUsers } from '../helper';
 describe('POST /users', () => {
     const api = request(app);
     const BASE_URL = '/users';
@@ -57,13 +54,12 @@ describe('POST /users', () => {
                 lastName: 'last_name',
                 password: '12345678',
                 email: 'email@gmail.com',
-                role: ROLES.ADMIN,
+                role: ROLES.MANAGER,
                 tenantId: tenant.id,
             };
 
             // create manager
-
-            await api
+            const response = await api
                 .post(BASE_URL)
                 .set('Cookie', [`accessToken=${accessToken};`])
                 .send(userData)
@@ -175,12 +171,13 @@ describe('POST /users', () => {
     });
 
     describe('validation errors', () => {
-        it('should return 400 status with expected validation error if tenantId is missing ', async () => {
+        it('should return 400 status with expected validation error if role is invalid ', async () => {
             const userData = {
                 firstName: 'first_name',
                 lastName: 'last_name',
                 password: '12345678',
                 email: 'email@gmail.com',
+                role: 'fish',
             };
 
             const accessToken = jwksMock.token({
@@ -194,13 +191,7 @@ describe('POST /users', () => {
                 .send(userData)
                 .expect(400);
 
-            await assertHasErrorMessage(result, 'tenantId is missing');
+            await assertHasErrorMessage(result, 'Invalid User Role');
         });
     });
 });
-
-async function createTenant(tenantData: TenantData) {
-    const tenantRepository = AppDataSource.getRepository(Tenant);
-    const tenant = await tenantRepository.save(tenantData);
-    return tenant;
-}
