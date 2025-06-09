@@ -14,6 +14,9 @@ class UserService {
             where: {
                 id,
             },
+            relations: {
+                tenant: true,
+            },
         });
 
         if (!user) {

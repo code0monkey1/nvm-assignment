@@ -28,9 +28,13 @@ export default checkSchema({
         trim: true,
         notEmpty: true,
     },
-    tenantId: {
-        errorMessage: 'tenantId is missing',
-        trim: true,
+    role: {
+        errorMessage: 'Role is required!',
         notEmpty: true,
+        trim: true,
+        isIn: {
+            options: [['manager', 'admin', 'customer']],
+            errorMessage: 'Invalid User Role',
+        },
     },
 });
