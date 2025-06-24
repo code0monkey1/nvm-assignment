@@ -133,7 +133,6 @@ describe('POST /users', () => {
             };
 
             // create manager
-
             const response = await api
                 .post(BASE_URL)
                 .set('Cookie', [`accessToken=${ADMIN_TOKEN};`])

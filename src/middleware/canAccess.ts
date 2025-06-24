@@ -11,7 +11,7 @@ export const canAccess = (roles: string[]) => {
             if (!roles.includes(userRole)) {
                 throw createHttpError(
                     403,
-                    `User with role : ${userRole} not allowed to perfom operation ! `,
+                    `User with role : ${userRole} not allowed to perfom operation!`,
                 );
             }
 

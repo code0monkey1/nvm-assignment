@@ -67,6 +67,10 @@ class UserService {
     deleteById = async (id: number) => {
         await this.userRepository.delete(id);
     };
+
+    findAll = async () => {
+        return await this.userRepository.find({});
+    };
 }
 
 export default UserService;

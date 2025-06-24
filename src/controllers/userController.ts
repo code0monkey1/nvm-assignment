@@ -39,6 +39,16 @@ export class UserController {
         }
     };
 
+    getAll = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const users = await this.userService.findAll();
+
+            res.json(users);
+        } catch (e) {
+            next(e);
+        }
+    };
+
     delete = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const authId = (req as AuthRequest).auth.sub;
