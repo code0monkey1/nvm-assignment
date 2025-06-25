@@ -27,11 +27,6 @@ route.post(
 
 route.delete('/:id', authenticate, userController.delete);
 
-route.get(
-    '/',
-    authenticate,
-    canAccess([ROLES.ADMIN, ROLES.MANAGER]),
-    userController.getAll,
-);
+route.get('/', authenticate, canAccess([ROLES.ADMIN]), userController.getAll);
 
 export default route;
