@@ -57,31 +57,6 @@ describe('GET /users', () => {
 
             expect(response.body[0].email).toBe(userData.email);
         });
-
-        it('should allow user with role `manager` to get all users', async () => {
-            // get the token for the user
-            const accessToken = jwksMock.token({
-                sub: `1`,
-                role: ROLES.MANAGER,
-            });
-
-            const userData: UserData = {
-                email: 'manager@gmail.com',
-                password: 'managerpassword123',
-                firstName: 'manager',
-                lastName: 'manager',
-                role: ROLES.MANAGER,
-            };
-
-            await createUser(userData);
-
-            const response = await api
-                .get(BASE_URL)
-                .set('Cookie', [`accessToken=${accessToken};`])
-                .expect(200);
-
-            expect(response.body[0].email).toBe(userData.email);
-        });
     });
 
     describe('non-auth user', () => {
@@ -89,7 +64,7 @@ describe('GET /users', () => {
             await api.get(BASE_URL).expect(401);
         });
 
-        it('should not allow user with role `CUSTOMER`', async () => {
+        it('should not allow user with role `CUSTOMER` to view customers', async () => {
             // get the token for the user
             const accessToken = jwksMock.token({
                 sub: `1`,
@@ -103,6 +78,22 @@ describe('GET /users', () => {
 
             expect(response.body.errors[0].msg).toBe(
                 'User with role : customer not allowed to perfom operation!',
+            );
+        });
+        it('should not allow user with role `MANAGER` to view customers', async () => {
+            // get the token for the user
+            const accessToken = jwksMock.token({
+                sub: `1`,
+                role: ROLES.MANAGER,
+            });
+
+            const response = await api
+                .get(BASE_URL)
+                .set('Cookie', [`accessToken=${accessToken};`])
+                .expect(403);
+
+            expect(response.body.errors[0].msg).toBe(
+                'User with role : manager not allowed to perfom operation!',
             );
         });
     });
